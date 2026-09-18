@@ -396,6 +396,27 @@
     text-align: center;
   }
   #loginNameInput:focus { outline: 2px solid var(--blue); outline-offset: 1px; }
+  #loginPinInput {
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 18px;
+    letter-spacing: 6px;
+    text-align: center;
+    padding: 11px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink);
+    width: 100%;
+  }
+  #loginPinInput:focus { outline: 2px solid var(--blue); outline-offset: 1px; }
+  .login-pin-hint {
+    font-size: 11.5px; color: var(--ink-soft);
+    margin: 6px 0 0; line-height: 1.5; text-align: left;
+  }
+  .login-cloud-note {
+    font-size: 11.5px; color: var(--ink-soft);
+    margin: 12px 0 0;
+  }
   .login-error { color: var(--wrong); font-size: 12.5px; margin-top: 10px; }
 
   /* ---------- Profile badge ---------- */
@@ -594,11 +615,16 @@
   <div class="login-card">
     <div class="login-glyph hangul">안녕</div>
     <h2>歡迎！先取個暱稱吧</h2>
-    <p>輸入暱稱後就會開始記錄你的學習進度（聽過的字母、學過的單字、測驗成績），資料只存在這個瀏覽器裡。</p>
+    <p>輸入暱稱後就會開始記錄你的學習進度（聽過的字母、學過的單字、測驗成績）。</p>
     <form id="loginForm">
       <input type="text" id="loginNameInput" maxlength="20" placeholder="輸入你的暱稱" autocomplete="off">
+      <div id="loginPinField" style="display:none;">
+        <input type="text" id="loginPinInput" maxlength="4" inputmode="numeric" pattern="[0-9]*" placeholder="設定或輸入 4 位數密碼" autocomplete="off">
+        <p class="login-pin-hint">第一次用這個暱稱時，你打的密碼會被記住；下次用同個暱稱要打一樣的密碼才能看到自己的進度。</p>
+      </div>
       <button type="submit" class="btn primary">開始學習</button>
     </form>
+    <p class="login-cloud-note" id="loginCloudNote"></p>
     <p class="login-error" id="loginError" style="display:none;">請輸入暱稱哦</p>
   </div>
 </div>
@@ -755,21 +781,62 @@
 
 <footer>点一下卡片即可聆聽發音 · 使用瀏覽器內建語音合成朗讀韓文</footer>
 
+<!-- Firebase (used for cross-device nickname + PIN login and progress storage). -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
 <script>
 (function(){
   "use strict";
 
+  // ---------------- Firebase setup ----------------
+  // 把下面這個物件換成你自己 Firebase 專案的設定值：
+  // Firebase 主控台 → 專案設定（齒輪圖示）→ 一路捲到「你的應用程式」→ SDK 設定與程式碼
+  // 貼上你拿到的那個 firebaseConfig 物件，取代下面這一整段即可。
+  var FIREBASE_CONFIG = {
+    apiKey: "PASTE_YOUR_API_KEY",
+    authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
+    projectId: "PASTE_YOUR_PROJECT_ID",
+    storageBucket: "PASTE_YOUR_PROJECT.appspot.com",
+    messagingSenderId: "PASTE_YOUR_SENDER_ID",
+    appId: "PASTE_YOUR_APP_ID"
+  };
+
+  var firebaseReady = false;
+  var db = null;
+  (function initFirebase(){
+    var configured = FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey.indexOf('PASTE_') !== 0;
+    if (!configured) return; // stays in local-only fallback mode until real config is pasted in
+    try {
+      firebase.initializeApp(FIREBASE_CONFIG);
+      db = firebase.firestore();
+      firebaseReady = true;
+    } catch(e){
+      console.error('Firebase 初始化失敗，改用本機儲存模式：', e);
+      firebaseReady = false;
+    }
+  })();
+
   // ---------------- Login & per-nickname progress tracking ----------------
-  // Everything is stored in this browser's localStorage, keyed by nickname,
-  // so progress is private to this device/browser but persists across visits.
+  // With Firebase configured: nickname + 4-digit PIN are checked against a
+  // Firestore document, so progress follows the learner across devices, and
+  // a PIN stops two different people from colliding on the same nickname.
+  // Without Firebase configured (placeholder values still in FIREBASE_CONFIG
+  // above): falls back to this browser's localStorage, no PIN needed.
   var CURRENT_USER_KEY = 'hangul40_current_user';
   var PROGRESS_PREFIX = 'hangul40_progress_';
-  var currentUser = null;   // nickname string
-  var progress = null;      // progress object for currentUser
+  var currentUser = null;      // display nickname
+  var currentDocKey = null;    // sanitized Firestore doc id for currentUser
+  var progress = null;         // progress object for currentUser
+
+  function sanitizeKey(name){
+    return name.trim().toLowerCase().replace(/[\/\s]+/g, '_').slice(0, 80);
+  }
 
   function defaultProgress(name){
     return {
       name: name,
+      pin: null,
       createdAt: Date.now(),
       lastVisit: Date.now(),
       lettersHeard: [],
@@ -779,27 +846,38 @@
     };
   }
 
-  function loadProgress(name){
+  function normalizeProgress(raw, name){
+    raw = raw || {};
+    return {
+      name: raw.name || name,
+      pin: raw.pin || null,
+      createdAt: raw.createdAt || Date.now(),
+      lastVisit: raw.lastVisit || Date.now(),
+      lettersHeard: raw.lettersHeard || [],
+      wordsLearned: raw.wordsLearned || [],
+      letterQuiz: raw.letterQuiz || { correct: 0, total: 0 },
+      vocabQuiz: raw.vocabQuiz || { correct: 0, total: 0 }
+    };
+  }
+
+  function loadLocalProgress(name){
     try {
       var raw = localStorage.getItem(PROGRESS_PREFIX + name);
-      if (raw) {
-        var parsed = JSON.parse(raw);
-        parsed.lettersHeard = parsed.lettersHeard || [];
-        parsed.wordsLearned = parsed.wordsLearned || [];
-        parsed.letterQuiz = parsed.letterQuiz || { correct: 0, total: 0 };
-        parsed.vocabQuiz = parsed.vocabQuiz || { correct: 0, total: 0 };
-        return parsed;
-      }
+      if (raw) return normalizeProgress(JSON.parse(raw), name);
     } catch(e){ /* ignore corrupt data */ }
     return defaultProgress(name);
   }
 
   function saveProgress(){
-    if (!currentUser || !progress) return;
+    if (!progress) return;
     progress.lastVisit = Date.now();
-    try {
-      localStorage.setItem(PROGRESS_PREFIX + currentUser, JSON.stringify(progress));
-    } catch(e){ /* storage full or unavailable: fail silently */ }
+    if (firebaseReady && currentDocKey){
+      db.collection('learners').doc(currentDocKey).set(progress)
+        .catch(function(e){ console.error('雲端儲存失敗：', e); });
+    } else if (currentUser){
+      try { localStorage.setItem(PROGRESS_PREFIX + currentUser, JSON.stringify(progress)); }
+      catch(e){ /* storage full or unavailable: fail silently */ }
+    }
   }
 
   function markLetterHeard(char){
@@ -855,7 +933,8 @@
     document.getElementById('statVocabQuizSub').textContent =
       progress.vocabQuiz.total ? '共作答 ' + progress.vocabQuiz.total + ' 題' : '還沒作答過';
     document.getElementById('progressMeta').textContent =
-      '開始學習：' + formatDate(progress.createdAt) + '　·　上次學習：' + formatDate(progress.lastVisit);
+      '開始學習：' + formatDate(progress.createdAt) + '　·　上次學習：' + formatDate(progress.lastVisit) +
+      (firebaseReady ? '　·　☁️ 雲端已同步' : '　·　💾 僅存在本機瀏覽器');
   }
 
   function updateProfileBadge(){
@@ -870,31 +949,104 @@
 
   function showLoginOverlay(){
     document.getElementById('loginOverlay').removeAttribute('hidden');
-    document.getElementById('loginNameInput').value = '';
+    document.getElementById('loginPinInput').value = '';
     document.getElementById('loginError').style.display = 'none';
-    setTimeout(function(){ document.getElementById('loginNameInput').focus(); }, 50);
+    var pinField = document.getElementById('loginPinField');
+    var savedName = '';
+    try { savedName = localStorage.getItem(CURRENT_USER_KEY) || ''; } catch(e){}
+    document.getElementById('loginNameInput').value = savedName;
+    if (firebaseReady){
+      pinField.style.display = 'block';
+      document.getElementById('loginCloudNote').textContent = '☁️ 已連接雲端，換裝置登入同一組暱稱＋密碼也看得到進度';
+    } else {
+      pinField.style.display = 'none';
+      document.getElementById('loginCloudNote').textContent = '💾 目前僅儲存在這個瀏覽器（尚未連接雲端資料庫）';
+    }
+    setTimeout(function(){
+      document.getElementById(savedName ? 'loginPinInput' : 'loginNameInput').focus();
+    }, 50);
   }
   function hideLoginOverlay(){
     document.getElementById('loginOverlay').setAttribute('hidden', 'hidden');
   }
+  function showLoginError(msg){
+    var el = document.getElementById('loginError');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+  function setLoginBusy(isBusy){
+    var btn = document.querySelector('#loginForm button[type="submit"]');
+    btn.disabled = isBusy;
+    btn.textContent = isBusy ? '處理中…' : '開始學習';
+  }
 
-  function signIn(name){
-    name = (name || '').trim();
-    if (!name){
-      document.getElementById('loginError').style.display = 'block';
-      return;
-    }
+  function finishSignIn(name, key, prog){
     currentUser = name;
-    progress = loadProgress(name);
-    saveProgress();
+    currentDocKey = key;
+    progress = prog;
     try { localStorage.setItem(CURRENT_USER_KEY, name); } catch(e){}
     updateProfileBadge();
     hideLoginOverlay();
   }
 
+  function signInLocalOnly(name){
+    var prog = loadLocalProgress(name);
+    saveProgressLocalRef(name, prog); // ensure a record exists immediately
+    finishSignIn(name, null, prog);
+    function saveProgressLocalRef(n, p){
+      try { localStorage.setItem(PROGRESS_PREFIX + n, JSON.stringify(p)); } catch(e){}
+    }
+  }
+
+  function attemptSignIn(name, pin){
+    name = (name || '').trim();
+    if (!name){ showLoginError('請輸入暱稱'); return; }
+
+    if (!firebaseReady){
+      signInLocalOnly(name);
+      return;
+    }
+
+    pin = (pin || '').trim();
+    if (!/^[0-9]{4}$/.test(pin)){ showLoginError('密碼請輸入 4 位數字'); return; }
+
+    setLoginBusy(true);
+    var key = sanitizeKey(name);
+    db.collection('learners').doc(key).get().then(function(snap){
+      if (snap.exists){
+        var data = snap.data();
+        if (data.pin !== pin){
+          setLoginBusy(false);
+          showLoginError('這個暱稱已經被使用，密碼不對喔（換一個暱稱，或輸入當初設定的密碼）');
+          return;
+        }
+        var prog = normalizeProgress(data, name);
+        setLoginBusy(false);
+        finishSignIn(prog.name || name, key, prog);
+        saveProgress();
+      } else {
+        var fresh = defaultProgress(name);
+        fresh.pin = pin;
+        db.collection('learners').doc(key).set(fresh).then(function(){
+          setLoginBusy(false);
+          finishSignIn(name, key, fresh);
+        }).catch(function(e){
+          setLoginBusy(false);
+          console.error(e);
+          showLoginError('連線失敗，請檢查網路後再試一次');
+        });
+      }
+    }).catch(function(e){
+      setLoginBusy(false);
+      console.error(e);
+      showLoginError('連線失敗，請檢查網路後再試一次');
+    });
+  }
+
   function signOutForSwitch(){
     try { localStorage.removeItem(CURRENT_USER_KEY); } catch(e){}
     currentUser = null;
+    currentDocKey = null;
     progress = null;
     updateProfileBadge();
     showLoginOverlay();
@@ -902,24 +1054,15 @@
 
   document.getElementById('loginForm').addEventListener('submit', function(e){
     e.preventDefault();
-    signIn(document.getElementById('loginNameInput').value);
+    attemptSignIn(
+      document.getElementById('loginNameInput').value,
+      document.getElementById('loginPinInput').value
+    );
   });
   document.getElementById('switchUserBtn').addEventListener('click', signOutForSwitch);
   document.getElementById('progressSwitchBtn').addEventListener('click', signOutForSwitch);
 
-  (function initLogin(){
-    var saved = null;
-    try { saved = localStorage.getItem(CURRENT_USER_KEY); } catch(e){}
-    if (saved){
-      currentUser = saved;
-      progress = loadProgress(saved);
-      saveProgress();
-      updateProfileBadge();
-      hideLoginOverlay();
-    } else {
-      showLoginOverlay();
-    }
-  })();
+  showLoginOverlay();
 
   // ---------------- Data ----------------
   var consonants = [
