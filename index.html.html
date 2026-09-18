@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>한글 40음 · 韓文四十音學習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #FAF6EC;
+    --paper-raised: #FFFFFF;
+    --ink: #211D18;
+    --ink-soft: #6B6156;
+    --line: #E4DBC9;
+    --blue: #1F4E8C;
+    --blue-soft: #E7EEF7;
+    --red: #B23B3B;
+    --red-soft: #F6E7E5;
+    --gold: #C68A1E;
+    --gold-soft: #F8EED8;
+    --correct: #2F7A4F;
+    --wrong: #B23B3B;
+    --shadow: rgba(33,29,24,0.10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #1C1A16;
+      --paper-raised: #262320;
+      --ink: #F3EEE4;
+      --ink-soft: #B8AF9F;
+      --line: #3A352C;
+      --blue: #6E9CD6;
+      --blue-soft: #22314A;
+      --red: #E08585;
+      --red-soft: #402424;
+      --gold: #E3B94F;
+      --gold-soft: #3A2E15;
+      --correct: #6FBF8C;
+      --wrong: #E08585;
+      --shadow: rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #1C1A16;
+    --paper-raised: #262320;
+    --ink: #F3EEE4;
+    --ink-soft: #B8AF9F;
+    --line: #3A352C;
+    --blue: #6E9CD6;
+    --blue-soft: #22314A;
+    --red: #E08585;
+    --red-soft: #402424;
+    --gold: #E3B94F;
+    --gold-soft: #3A2E15;
+    --correct: #6FBF8C;
+    --wrong: #E08585;
+    --shadow: rgba(0,0,0,0.35);
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+  body {
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+  .hangul { font-family: 'Noto Serif KR', serif; }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative;
+    padding: 48px 24px 32px;
+    text-align: center;
+    overflow: hidden;
+    border-bottom: 1px solid var(--line);
+  }
+  @keyframes rise { to { opacity:1; transform: translateY(0);} }
+  @keyframes reveal { to { opacity:1; } }
+  .hero h1 {
+    margin: 8px 0 6px;
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 900;
+    font-size: clamp(28px, 6vw, 44px);
+    letter-spacing: 0.04em;
+  }
+  .hero h1 span { display: inline-block; opacity: 0; transform: translateY(10px); animation: rise 0.5s ease forwards; }
+  .hero h1 span:nth-child(1){animation-delay:.05s;color:var(--blue);}
+  .hero h1 span:nth-child(2){animation-delay:.15s;color:var(--red);}
+  .hero h1 span:nth-child(3){animation-delay:.25s;color:var(--gold);}
+  .hero h1 span:nth-child(4){animation-delay:.25s;color:var(--ink);}
+  .hero p {
+    margin: 0 auto;
+    max-width: 480px;
+    color: var(--ink-soft);
+    font-size: 14.5px;
+    line-height: 1.7;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero h1 span { animation: none; opacity: 1; transform: none; }
+  }
+
+  /* ---------- Tabs ---------- */
+  .tabbar {
+    position: sticky; top: 0; z-index: 20;
+    display: flex;
+    gap: 6px;
+    padding: 10px 16px;
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+    overflow-x: auto;
+    -ms-overflow-style: none; scrollbar-width: none;
+  }
+  .tabbar::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    flex: 0 0 auto;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 9px 16px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: background .18s ease, color .18s ease, border-color .18s ease;
+  }
+  .tab-btn:hover { border-color: var(--ink-soft); }
+  .tab-btn.active {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+
+  main { max-width: 880px; margin: 0 auto; padding: 24px 16px 8px; }
+  .view { display: none; }
+  .view.active { display: block; }
+
+  .section-label {
+    display: flex; align-items: baseline; gap: 10px;
+    margin: 4px 2px 16px;
+  }
+  .section-label h2 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 20px; margin: 0;
+  }
+  .section-label span {
+    font-size: 13px; color: var(--ink-soft);
+  }
+
+  .section-label.sub {
+    margin-top: 30px;
+  }
+  .section-label.sub h2 {
+    font-size: 17px;
+  }
+
+  .subtabbar {
+    display: flex; gap: 8px;
+    margin: 0 2px 20px;
+  }
+  .subtab-btn {
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 13.5px; font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: background .18s ease, color .18s ease, border-color .18s ease;
+  }
+  .subtab-btn:hover { border-color: var(--ink-soft); }
+  .subtab-btn.active {
+    background: var(--blue);
+    color: #fff;
+    border-color: var(--blue);
+  }
+  .subview { display: none; }
+  .subview.active { display: block; }
+
+  /* ---------- Letter grid ---------- */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+    gap: 10px;
+  }
+  .card {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 6px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 8px 18px var(--shadow); }
+  .card:active { transform: translateY(0); }
+  .card.selected { border-color: var(--blue); box-shadow: 0 0 0 2px var(--blue-soft) inset; }
+  .card .glyph {
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 700;
+    font-size: 30px;
+    line-height: 1.1;
+  }
+  .card .rom {
+    margin-top: 4px;
+    font-size: 11px;
+    color: var(--ink-soft);
+    letter-spacing: 0.02em;
+  }
+  .consonants .card .glyph { color: var(--blue); }
+  .vowels .card .glyph { color: var(--red); }
+
+  /* ---------- Detail panel ---------- */
+  .detail {
+    margin-top: 20px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 20px;
+    display: none;
+  }
+  .detail.show { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+  .detail .big-glyph {
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 700;
+    font-size: 64px;
+    width: 100px; text-align: center;
+    flex: 0 0 auto;
+  }
+  .detail-info { flex: 1 1 200px; min-width: 180px; }
+  .detail-info .name { font-size: 13px; color: var(--ink-soft); margin-bottom: 2px;}
+  .detail-info .rom-big { font-size: 15px; font-weight: 500; margin-bottom: 8px; }
+  .detail-info .example {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 18px; font-weight: 500;
+  }
+  .detail-info .example .zh { font-family: 'Noto Sans TC', sans-serif; font-size: 13px; color: var(--ink-soft); margin-left: 6px;}
+  .detail-actions { display: flex; gap: 8px; flex: 0 0 auto; }
+  .btn {
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 13.5px; font-weight: 500;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: background .15s ease, border-color .15s ease;
+  }
+  .btn:hover { border-color: var(--ink-soft); }
+  .btn.primary { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .btn.primary:hover { opacity: .92; }
+
+  /* ---------- Write practice ---------- */
+  .write-wrap {
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
+  }
+  .write-picker {
+    display: flex; gap: 6px; flex-wrap: wrap; justify-content: center;
+    max-width: 620px;
+  }
+  .write-picker button {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 15px;
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--paper-raised);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .write-picker button.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .canvas-box {
+    position: relative;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    box-shadow: 0 8px 24px var(--shadow);
+    touch-action: none;
+  }
+  #traceCanvas { display: block; border-radius: 18px; cursor: crosshair; }
+  .write-controls { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .write-hint { font-size: 13px; color: var(--ink-soft); text-align: center; max-width: 420px; }
+
+  /* ---------- Combination chart ---------- */
+  .chart-now {
+    text-align: center;
+    font-size: 14px;
+    color: var(--ink-soft);
+    margin-bottom: 14px;
+    min-height: 20px;
+  }
+  .chart-now strong {
+    font-family: 'Noto Serif KR', serif;
+    color: var(--ink);
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .chart-scroll {
+    max-width: 100%;
+    max-height: 62vh;
+    overflow: auto;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+  }
+  table.chart-table {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+  .chart-table th, .chart-table td {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 16px;
+    width: 44px;
+    height: 40px;
+    min-width: 44px;
+    text-align: center;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    background: var(--paper-raised);
+  }
+  .chart-table th {
+    font-weight: 700;
+    color: var(--ink-soft);
+    background: var(--paper);
+    position: sticky;
+    z-index: 2;
+  }
+  .chart-table thead th { top: 0; }
+  .chart-table td.rowhead {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    color: var(--blue);
+    font-weight: 700;
+    background: var(--paper);
+  }
+  .chart-table thead th.corner {
+    position: sticky;
+    left: 0; top: 0;
+    z-index: 3;
+  }
+  .chart-table td.cell {
+    cursor: pointer;
+    color: var(--ink);
+    transition: background .12s ease;
+  }
+  .chart-table td.cell:hover { background: var(--blue-soft); }
+  .chart-table td.cell:active { background: var(--gold-soft); }
+
+  /* ---------- Login overlay ---------- */
+  .login-overlay {
+    position: fixed; inset: 0; z-index: 100;
+    background: rgba(28,26,22,0.55);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .login-overlay[hidden] { display: none; }
+  .login-card {
+    background: var(--paper-raised);
+    border-radius: 20px;
+    padding: 32px 28px;
+    max-width: 360px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+  }
+  .login-glyph {
+    font-size: 40px; font-weight: 700; color: var(--blue);
+    margin-bottom: 8px;
+  }
+  .login-card h2 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 19px; margin: 0 0 10px;
+  }
+  .login-card p {
+    font-size: 13px; color: var(--ink-soft); line-height: 1.6;
+    margin: 0 0 18px;
+  }
+  #loginForm { display: flex; flex-direction: column; gap: 10px; }
+  #loginNameInput {
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 15px;
+    padding: 11px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink);
+    text-align: center;
+  }
+  #loginNameInput:focus { outline: 2px solid var(--blue); outline-offset: 1px; }
+  .login-error { color: var(--wrong); font-size: 12.5px; margin-top: 10px; }
+
+  /* ---------- Profile badge ---------- */
+  .profile-badge {
+    position: absolute;
+    top: 14px; right: 16px;
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12.5px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 6px 8px 6px 14px;
+  }
+  .profile-badge #profileName {
+    font-weight: 500;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .profile-badge #profileName::before { content: '👤 '; }
+  .profile-badge button {
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 11.5px;
+    border: none;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    border-radius: 999px;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  @media (max-width: 480px) {
+    .profile-badge { position: static; margin: 0 auto 14px; width: fit-content; }
+  }
+
+  /* ---------- Progress dashboard ---------- */
+  .progress-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .progress-stat {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 20px 16px;
+    text-align: center;
+  }
+  .progress-num {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 26px; font-weight: 700;
+    color: var(--blue);
+  }
+  .progress-label {
+    margin-top: 6px; font-size: 12.5px; color: var(--ink-soft);
+  }
+  .progress-label span { display: block; font-size: 11px; margin-top: 2px; }
+
+  /* ---------- Unit filter ---------- */
+  .unit-filter {
+    display: flex; flex-direction: column; gap: 8px;
+    margin: 0 2px 18px;
+  }
+  .unit-chip {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 13px; line-height: 1.6; color: var(--ink);
+    border: 1px solid var(--line);
+    background: var(--paper-raised);
+    border-radius: 12px;
+    padding: 10px 14px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .unit-chip input { accent-color: var(--blue); width: 15px; height: 15px; cursor: pointer; margin-top: 3px; flex: 0 0 auto; }
+  .unit-chip span { font-family: 'Noto Serif KR', serif; }
+  .unit-chip.unchecked { color: var(--ink-soft); }
+  .vocab-empty, .vocab-quiz-not-enough {
+    font-size: 13.5px; color: var(--ink-soft);
+    background: var(--gold-soft);
+    border-radius: 12px;
+    padding: 14px 18px;
+    text-align: center;
+    max-width: 360px;
+  }
+  .vocab-quiz-prompt {
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 28px; font-weight: 700;
+    text-align: center;
+    min-height: 40px;
+  }
+
+  /* ---------- Vocabulary flashcards ---------- */
+  .vocab-wrap { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 8px 0 20px; }
+  .vocab-progress { font-size: 13px; color: var(--ink-soft); }
+  .vocab-card {
+    width: min(320px, 84vw);
+    height: 220px;
+    perspective: 1200px;
+    cursor: pointer;
+  }
+  .vocab-face {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    border-radius: 20px;
+    border: 1px solid var(--line);
+    box-shadow: 0 10px 26px var(--shadow);
+    backface-visibility: hidden;
+    transition: transform .5s cubic-bezier(.4,.2,.2,1);
+    padding: 20px;
+    text-align: center;
+  }
+  .vocab-card { position: relative; }
+  .vocab-front { background: var(--paper-raised); transform: rotateY(0deg); }
+  .vocab-back { background: var(--gold-soft); transform: rotateY(180deg); }
+  .vocab-card.flipped .vocab-front { transform: rotateY(-180deg); }
+  .vocab-card.flipped .vocab-back { transform: rotateY(0deg); }
+  .vocab-letter-tag {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 14px;
+    color: var(--ink-soft);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 3px 12px;
+    margin-bottom: 14px;
+  }
+  .vocab-word {
+    font-size: 40px; font-weight: 700;
+  }
+  .vocab-flip-hint {
+    margin-top: 14px; font-size: 12px; color: var(--ink-soft);
+  }
+  .vocab-zh {
+    font-size: 26px; font-weight: 700; font-family: 'Noto Sans TC', sans-serif;
+  }
+  .vocab-rom {
+    margin-top: 10px; font-size: 14px; color: var(--ink-soft);
+  }
+  .vocab-controls { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  @media (prefers-reduced-motion: reduce) {
+    .vocab-face { transition: none; }
+  }
+
+  /* ---------- Quiz ---------- */
+  .quiz-wrap { display: flex; flex-direction: column; align-items: center; gap: 22px; padding: 12px 0 20px; }
+  .quiz-score { font-size: 13px; color: var(--ink-soft); }
+  .quiz-play-btn {
+    width: 96px; height: 96px;
+    border-radius: 50%;
+    border: none;
+    background: var(--gold);
+    color: #2A2210;
+    font-size: 34px;
+    cursor: pointer;
+    box-shadow: 0 10px 26px var(--shadow);
+    transition: transform .12s ease;
+  }
+  .quiz-play-btn:hover { transform: scale(1.04); }
+  .quiz-play-btn:active { transform: scale(0.97); }
+  .quiz-prompt { font-size: 14px; color: var(--ink-soft); }
+  .quiz-options {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+    width: 100%; max-width: 360px;
+  }
+  .quiz-opt {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 30px; font-weight: 700;
+    padding: 18px 0;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: var(--paper-raised);
+    cursor: pointer;
+  }
+  .quiz-opt:hover { border-color: var(--ink-soft); }
+  .quiz-opt.correct { background: var(--correct); color: #fff; border-color: var(--correct); }
+  .quiz-opt.wrong { background: var(--wrong); color: #fff; border-color: var(--wrong); }
+  .quiz-feedback { min-height: 20px; font-size: 14px; font-weight: 500; }
+  .quiz-feedback.correct-text { color: var(--correct); }
+  .quiz-feedback.wrong-text { color: var(--wrong); }
+
+  footer {
+    text-align: center; padding: 30px 16px 10px;
+    font-size: 12px; color: var(--ink-soft);
+  }
+  .no-speech {
+    display: none;
+    max-width: 880px; margin: 0 auto; padding: 10px 16px;
+    font-size: 12.5px; color: var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-card">
+    <div class="login-glyph hangul">안녕</div>
+    <h2>歡迎！先取個暱稱吧</h2>
+    <p>輸入暱稱後就會開始記錄你的學習進度（聽過的字母、學過的單字、測驗成績），資料只存在這個瀏覽器裡。</p>
+    <form id="loginForm">
+      <input type="text" id="loginNameInput" maxlength="20" placeholder="輸入你的暱稱" autocomplete="off">
+      <button type="submit" class="btn primary">開始學習</button>
+    </form>
+    <p class="login-error" id="loginError" style="display:none;">請輸入暱稱哦</p>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="profile-badge" id="profileBadge" style="display:none;">
+    <span id="profileName"></span>
+    <button id="switchUserBtn" title="更換暱稱">更換暱稱</button>
+  </div>
+  <h1><span>學</span><span>習</span><span>韓</span><span>文</span></h1>
+  <p>韓文的基本 19 個子音、21 個母音，一共 40 個發音。點一下卡片就能聽發音，還可以練習寫字、做小測驗。</p>
+</div>
+
+<div class="tabbar" role="tablist">
+  <button class="tab-btn active" data-view="alphabet">40音</button>
+  <button class="tab-btn" data-view="chart">發音表</button>
+  <button class="tab-btn" data-view="vocab">學單字</button>
+  <button class="tab-btn" data-view="vocabquiz">單字測驗</button>
+  <button class="tab-btn" data-view="quiz">字母測驗</button>
+  <button class="tab-btn" data-view="progress">我的進度</button>
+</div>
+
+<p class="no-speech" id="noSpeechNote">這個瀏覽器目前沒有偵測到語音朗讀功能，發音播放可能無法使用，建議改用 Chrome 或 Safari 開啟。</p>
+
+<main>
+
+  <!-- 40 sounds: consonants + vowels together -->
+  <section class="view active" id="view-alphabet">
+    <div class="section-label"><h2>40音</h2><span>19 個子音 + 21 個母音，一共 40 個發音</span></div>
+
+    <div class="subtabbar" id="alphabetSubTabs">
+      <button class="subtab-btn active" data-subview="cards">字母總覽</button>
+      <button class="subtab-btn" data-subview="write">練習寫字</button>
+    </div>
+
+    <div class="subview active" id="subview-cards">
+      <div class="section-label sub"><h2>자음 · 子音</h2><span>14 個基本音 + 5 個雙子音</span></div>
+      <div class="grid consonants" id="grid-consonants"></div>
+
+      <div class="section-label sub"><h2>모음 · 母音</h2><span>10 個基本音 + 11 個複合音</span></div>
+      <div class="grid vowels" id="grid-vowels"></div>
+
+      <div class="detail" id="detail-alphabet"></div>
+    </div>
+
+    <div class="subview" id="subview-write">
+      <div class="write-wrap">
+        <div class="write-picker" id="writePicker"></div>
+        <div class="canvas-box">
+          <canvas id="traceCanvas" width="280" height="280"></canvas>
+        </div>
+        <div class="write-controls">
+          <button class="btn primary" id="writePlayBtn">🔊 播放發音</button>
+          <button class="btn" id="writeClearBtn">清除重寫</button>
+        </div>
+        <p class="write-hint" id="writeHint"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Combination chart -->
+  <section class="view" id="view-chart">
+    <div class="section-label"><h2>發音表</h2><span>子音＋母音全部組合起來，看看合起來怎麼唸</span></div>
+    <div class="chart-now" id="chartNow">點下方表格裡的字，聽聽看子音和母音合起來的發音</div>
+    <div class="chart-scroll">
+      <table class="chart-table" id="chartTable"></table>
+    </div>
+    <p class="write-hint">最左邊直排是子音、最上面橫排是母音，交叉的字就是兩個合起來的發音。有些組合在實際韓文單字裡不常用，但發音規則都是一樣的。</p>
+  </section>
+
+  <!-- Vocabulary flashcards -->
+  <section class="view" id="view-vocab">
+    <div class="section-label"><h2>單字學習</h2><span>每個字母搭配一個韓文單字，看看它是什麼意思</span></div>
+    <div class="unit-filter" id="vocabUnitFilter"></div>
+    <div class="vocab-wrap">
+      <div class="vocab-progress" id="vocabProgress">1 / 40</div>
+      <div class="vocab-empty" id="vocabEmpty" style="display:none;">請至少選擇一個單元</div>
+      <div class="vocab-card" id="vocabCard">
+        <div class="vocab-face vocab-front">
+          <div class="vocab-letter-tag" id="vocabLetterTag"></div>
+          <div class="vocab-word hangul" id="vocabWord"></div>
+          <div class="vocab-flip-hint">點卡片看中文意思</div>
+        </div>
+        <div class="vocab-face vocab-back">
+          <div class="vocab-zh" id="vocabZh"></div>
+          <div class="vocab-rom" id="vocabRom"></div>
+        </div>
+      </div>
+      <div class="vocab-controls">
+        <button class="btn" id="vocabPrevBtn">← 上一個</button>
+        <button class="btn primary" id="vocabPlayBtn">🔊 播放發音</button>
+        <button class="btn" id="vocabNextBtn">下一個 →</button>
+      </div>
+      <button class="btn" id="vocabShuffleBtn">🔀 隨機排序</button>
+    </div>
+  </section>
+
+  <!-- Vocabulary quiz -->
+  <section class="view" id="view-vocabquiz">
+    <div class="section-label"><h2>單字測驗</h2><span>先選擇要測驗的單元，再看中文意思選出正確的韓文單字</span></div>
+    <div class="unit-filter" id="vocabQuizUnitFilter"></div>
+    <div class="quiz-wrap">
+      <div class="quiz-score" id="vocabQuizScore">答對 0 題 · 共作答 0 題</div>
+      <div class="vocab-quiz-not-enough" id="vocabQuizNotEnough" style="display:none;">所選單元的單字不足 4 個，請多選幾個單元再開始測驗。</div>
+      <div class="vocab-quiz-prompt" id="vocabQuizPrompt"></div>
+      <div class="quiz-options" id="vocabQuizOptions"></div>
+      <div class="quiz-feedback" id="vocabQuizFeedback"></div>
+      <div class="write-controls">
+        <button class="btn" id="vocabQuizPlayBtn">🔊 聽發音</button>
+        <button class="btn primary" id="vocabQuizNextBtn">換下一題</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quiz -->
+  <section class="view" id="view-quiz">
+    <div class="section-label"><h2>字母測驗</h2><span>聽發音，選出正確的字母</span></div>
+    <div class="quiz-wrap">
+      <div class="quiz-score" id="quizScore">答對 0 題 · 共作答 0 題</div>
+      <button class="quiz-play-btn" id="quizPlayBtn" aria-label="播放發音">🔊</button>
+      <div class="quiz-prompt">點喇叭聽發音，再從下面選出正確的字</div>
+      <div class="quiz-options" id="quizOptions"></div>
+      <div class="quiz-feedback" id="quizFeedback"></div>
+      <button class="btn" id="quizNextBtn">換下一題</button>
+    </div>
+  </section>
+
+  <!-- My progress -->
+  <section class="view" id="view-progress">
+    <div class="section-label"><h2>我的進度</h2><span id="progressSubtitle">看看目前學到哪裡了</span></div>
+    <div class="progress-grid">
+      <div class="progress-stat">
+        <div class="progress-num" id="statLetters">0 / 40</div>
+        <div class="progress-label">聽過的字母</div>
+      </div>
+      <div class="progress-stat">
+        <div class="progress-num" id="statWords">0 / 120</div>
+        <div class="progress-label">學過的單字</div>
+      </div>
+      <div class="progress-stat">
+        <div class="progress-num" id="statLetterQuiz">— %</div>
+        <div class="progress-label">字母測驗正確率<span id="statLetterQuizSub"></span></div>
+      </div>
+      <div class="progress-stat">
+        <div class="progress-num" id="statVocabQuiz">— %</div>
+        <div class="progress-label">單字測驗正確率<span id="statVocabQuizSub"></span></div>
+      </div>
+    </div>
+    <p class="write-hint" id="progressMeta"></p>
+    <button class="btn" id="progressSwitchBtn">更換暱稱 / 切換使用者</button>
+  </section>
+
+</main>
+
+<footer>点一下卡片即可聆聽發音 · 使用瀏覽器內建語音合成朗讀韓文</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------------- Login & per-nickname progress tracking ----------------
+  // Everything is stored in this browser's localStorage, keyed by nickname,
+  // so progress is private to this device/browser but persists across visits.
+  var CURRENT_USER_KEY = 'hangul40_current_user';
+  var PROGRESS_PREFIX = 'hangul40_progress_';
+  var currentUser = null;   // nickname string
+  var progress = null;      // progress object for currentUser
+
+  function defaultProgress(name){
+    return {
+      name: name,
+      createdAt: Date.now(),
+      lastVisit: Date.now(),
+      lettersHeard: [],
+      wordsLearned: [],
+      letterQuiz: { correct: 0, total: 0 },
+      vocabQuiz: { correct: 0, total: 0 }
+    };
+  }
+
+  function loadProgress(name){
+    try {
+      var raw = localStorage.getItem(PROGRESS_PREFIX + name);
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        parsed.lettersHeard = parsed.lettersHeard || [];
+        parsed.wordsLearned = parsed.wordsLearned || [];
+        parsed.letterQuiz = parsed.letterQuiz || { correct: 0, total: 0 };
+        parsed.vocabQuiz = parsed.vocabQuiz || { correct: 0, total: 0 };
+        return parsed;
+      }
+    } catch(e){ /* ignore corrupt data */ }
+    return defaultProgress(name);
+  }
+
+  function saveProgress(){
+    if (!currentUser || !progress) return;
+    progress.lastVisit = Date.now();
+    try {
+      localStorage.setItem(PROGRESS_PREFIX + currentUser, JSON.stringify(progress));
+    } catch(e){ /* storage full or unavailable: fail silently */ }
+  }
+
+  function markLetterHeard(char){
+    if (!progress) return;
+    if (progress.lettersHeard.indexOf(char) === -1){
+      progress.lettersHeard.push(char);
+      saveProgress();
+    }
+  }
+
+  function markWordLearned(word){
+    if (!progress) return;
+    if (progress.wordsLearned.indexOf(word) === -1){
+      progress.wordsLearned.push(word);
+      saveProgress();
+    }
+  }
+
+  function recordLetterQuizResult(isCorrect){
+    if (!progress) return;
+    progress.letterQuiz.total++;
+    if (isCorrect) progress.letterQuiz.correct++;
+    saveProgress();
+  }
+
+  function recordVocabQuizResult(isCorrect){
+    if (!progress) return;
+    progress.vocabQuiz.total++;
+    if (isCorrect) progress.vocabQuiz.correct++;
+    saveProgress();
+  }
+
+  function formatDate(ts){
+    if (!ts) return '';
+    var d = new Date(ts);
+    return d.getFullYear() + '/' + (d.getMonth()+1) + '/' + d.getDate();
+  }
+
+  function pct(correct, total){
+    if (!total) return '— %';
+    return Math.round((correct/total)*100) + '%';
+  }
+
+  function renderProgressTab(){
+    if (!progress) return;
+    document.getElementById('progressSubtitle').textContent = currentUser + ' 的學習進度';
+    document.getElementById('statLetters').textContent = progress.lettersHeard.length + ' / ' + all.length;
+    document.getElementById('statWords').textContent = progress.wordsLearned.length + ' / ' + VOCAB.length;
+    document.getElementById('statLetterQuiz').textContent = pct(progress.letterQuiz.correct, progress.letterQuiz.total);
+    document.getElementById('statLetterQuizSub').textContent =
+      progress.letterQuiz.total ? '共作答 ' + progress.letterQuiz.total + ' 題' : '還沒作答過';
+    document.getElementById('statVocabQuiz').textContent = pct(progress.vocabQuiz.correct, progress.vocabQuiz.total);
+    document.getElementById('statVocabQuizSub').textContent =
+      progress.vocabQuiz.total ? '共作答 ' + progress.vocabQuiz.total + ' 題' : '還沒作答過';
+    document.getElementById('progressMeta').textContent =
+      '開始學習：' + formatDate(progress.createdAt) + '　·　上次學習：' + formatDate(progress.lastVisit);
+  }
+
+  function updateProfileBadge(){
+    var badge = document.getElementById('profileBadge');
+    if (currentUser){
+      badge.style.display = 'flex';
+      document.getElementById('profileName').textContent = currentUser;
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+
+  function showLoginOverlay(){
+    document.getElementById('loginOverlay').removeAttribute('hidden');
+    document.getElementById('loginNameInput').value = '';
+    document.getElementById('loginError').style.display = 'none';
+    setTimeout(function(){ document.getElementById('loginNameInput').focus(); }, 50);
+  }
+  function hideLoginOverlay(){
+    document.getElementById('loginOverlay').setAttribute('hidden', 'hidden');
+  }
+
+  function signIn(name){
+    name = (name || '').trim();
+    if (!name){
+      document.getElementById('loginError').style.display = 'block';
+      return;
+    }
+    currentUser = name;
+    progress = loadProgress(name);
+    saveProgress();
+    try { localStorage.setItem(CURRENT_USER_KEY, name); } catch(e){}
+    updateProfileBadge();
+    hideLoginOverlay();
+  }
+
+  function signOutForSwitch(){
+    try { localStorage.removeItem(CURRENT_USER_KEY); } catch(e){}
+    currentUser = null;
+    progress = null;
+    updateProfileBadge();
+    showLoginOverlay();
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    signIn(document.getElementById('loginNameInput').value);
+  });
+  document.getElementById('switchUserBtn').addEventListener('click', signOutForSwitch);
+  document.getElementById('progressSwitchBtn').addEventListener('click', signOutForSwitch);
+
+  (function initLogin(){
+    var saved = null;
+    try { saved = localStorage.getItem(CURRENT_USER_KEY); } catch(e){}
+    if (saved){
+      currentUser = saved;
+      progress = loadProgress(saved);
+      saveProgress();
+      updateProfileBadge();
+      hideLoginOverlay();
+    } else {
+      showLoginOverlay();
+    }
+  })();
+
+  // ---------------- Data ----------------
+  var consonants = [
+    {char:"ㄱ", name:"기역", rom:"g / k", ex:"가방", zh:"包包"},
+    {char:"ㄴ", name:"니은", rom:"n", ex:"나무", zh:"樹木"},
+    {char:"ㄷ", name:"디귿", rom:"d / t", ex:"다리", zh:"腿／橋"},
+    {char:"ㄹ", name:"리을", rom:"r / l", ex:"라면", zh:"拉麵"},
+    {char:"ㅁ", name:"미음", rom:"m", ex:"마음", zh:"心"},
+    {char:"ㅂ", name:"비읍", rom:"b / p", ex:"바다", zh:"海"},
+    {char:"ㅅ", name:"시옷", rom:"s", ex:"사랑", zh:"愛"},
+    {char:"ㅇ", name:"이응", rom:"ng / 無聲", ex:"아빠", zh:"爸爸"},
+    {char:"ㅈ", name:"지읒", rom:"j", ex:"자동차", zh:"汽車"},
+    {char:"ㅊ", name:"치읓", rom:"ch", ex:"치마", zh:"裙子"},
+    {char:"ㅋ", name:"키읔", rom:"k", ex:"카메라", zh:"相機"},
+    {char:"ㅌ", name:"티읕", rom:"t", ex:"토끼", zh:"兔子"},
+    {char:"ㅍ", name:"피읖", rom:"p", ex:"포도", zh:"葡萄"},
+    {char:"ㅎ", name:"히읗", rom:"h", ex:"하늘", zh:"天空"},
+    {char:"ㄲ", name:"쌍기역", rom:"kk", ex:"까치", zh:"喜鵲"},
+    {char:"ㄸ", name:"쌍디귿", rom:"tt", ex:"딸기", zh:"草莓"},
+    {char:"ㅃ", name:"쌍비읍", rom:"pp", ex:"빵", zh:"麵包"},
+    {char:"ㅆ", name:"쌍시옷", rom:"ss", ex:"쌀", zh:"米"},
+    {char:"ㅉ", name:"쌍지읒", rom:"jj", ex:"짜장면", zh:"炸醬麵"}
+  ];
+
+  var vowels = [
+    {char:"ㅏ", name:"아", rom:"a", ex:"아이", zh:"小孩"},
+    {char:"ㅑ", name:"야", rom:"ya", ex:"야구", zh:"棒球"},
+    {char:"ㅓ", name:"어", rom:"eo", ex:"어머니", zh:"媽媽"},
+    {char:"ㅕ", name:"여", rom:"yeo", ex:"여자", zh:"女生"},
+    {char:"ㅗ", name:"오", rom:"o", ex:"오빠", zh:"哥哥(女生用)"},
+    {char:"ㅛ", name:"요", rom:"yo", ex:"요리", zh:"料理"},
+    {char:"ㅜ", name:"우", rom:"u", ex:"우유", zh:"牛奶"},
+    {char:"ㅠ", name:"유", rom:"yu", ex:"유리", zh:"玻璃"},
+    {char:"ㅡ", name:"으", rom:"eu", ex:"그림", zh:"圖畫"},
+    {char:"ㅣ", name:"이", rom:"i", ex:"이름", zh:"名字"},
+    {char:"ㅐ", name:"애", rom:"ae", ex:"개", zh:"狗"},
+    {char:"ㅒ", name:"얘", rom:"yae", ex:"얘기", zh:"聊天"},
+    {char:"ㅔ", name:"에", rom:"e", ex:"게", zh:"螃蟹"},
+    {char:"ㅖ", name:"예", rom:"ye", ex:"계란", zh:"雞蛋"},
+    {char:"ㅘ", name:"와", rom:"wa", ex:"사과", zh:"蘋果"},
+    {char:"ㅙ", name:"왜", rom:"wae", ex:"돼지", zh:"豬"},
+    {char:"ㅚ", name:"외", rom:"oe", ex:"회사", zh:"公司"},
+    {char:"ㅝ", name:"워", rom:"wo", ex:"원숭이", zh:"猴子"},
+    {char:"ㅞ", name:"웨", rom:"we", ex:"웨딩", zh:"婚禮"},
+    {char:"ㅟ", name:"위", rom:"wi", ex:"쥐", zh:"老鼠"},
+    {char:"ㅢ", name:"의", rom:"ui", ex:"의사", zh:"醫生"}
+  ];
+
+  var all = consonants.map(function(x){return Object.assign({type:"consonant"}, x);})
+      .concat(vowels.map(function(x){return Object.assign({type:"vowel"}, x);}));
+
+  // ---------------- Vocabulary word bank ----------------
+  // A much bigger, standalone set of everyday words, grouped into themed
+  // units of 10. Independent of the 40 letters above, so there can be as
+  // many units as there are words to teach.
+  var THEMES = {
+    1: '打招呼與基本用語',
+    2: '家人稱謂',
+    3: '數字（固有語，1–10）',
+    4: '數字（漢字音，1–10）',
+    5: '顏色',
+    6: '動物',
+    7: '食物',
+    8: '天氣與季節',
+    9: '身體部位',
+    10: '交通工具',
+    11: '學校與日常用品',
+    12: '常用動詞・形容詞'
+  };
+
+  var VOCAB_RAW = {
+    1: [
+      ["안녕하세요","你好","annyeonghaseyo"], ["감사합니다","謝謝","gamsahamnida"],
+      ["죄송합니다","對不起","joesonghamnida"], ["네","是","ne"], ["아니요","不是","aniyo"],
+      ["이름","名字","ireum"], ["친구","朋友","chingu"], ["사랑","愛","sarang"],
+      ["가족","家人","gajok"], ["안녕","嗨／再見（非正式）","annyeong"]
+    ],
+    2: [
+      ["아빠","爸爸","appa"], ["엄마","媽媽","eomma"], ["오빠","哥哥（女生用）","oppa"],
+      ["언니","姊姊（女生用）","eonni"], ["형","哥哥（男生用）","hyeong"], ["누나","姊姊（男生用）","nuna"],
+      ["동생","弟弟／妹妹","dongsaeng"], ["할아버지","爺爺","harabeoji"], ["할머니","奶奶","halmeoni"],
+      ["아이","小孩","ai"]
+    ],
+    3: [
+      ["하나","一","hana"], ["둘","二","dul"], ["셋","三","set"], ["넷","四","net"],
+      ["다섯","五","daseot"], ["여섯","六","yeoseot"], ["일곱","七","ilgop"],
+      ["여덟","八","yeodeol"], ["아홉","九","ahop"], ["열","十","yeol"]
+    ],
+    4: [
+      ["일","一","il"], ["이","二","i"], ["삼","三","sam"], ["사","四","sa"], ["오","五","o"],
+      ["육","六","yuk"], ["칠","七","chil"], ["팔","八","pal"], ["구","九","gu"], ["십","十","sip"]
+    ],
+    5: [
+      ["빨간색","紅色","ppalgansaek"], ["주황색","橘色","juhwangsaek"], ["노란색","黃色","noransaek"],
+      ["초록색","綠色","choroksaek"], ["파란색","藍色","paransaek"], ["보라색","紫色","borasaek"],
+      ["하얀색","白色","hayansaek"], ["검은색","黑色","geomeunsaek"], ["회색","灰色","hoesaek"],
+      ["갈색","棕色","galsaek"]
+    ],
+    6: [
+      ["강아지","小狗","gangaji"], ["고양이","貓","goyangi"], ["토끼","兔子","tokki"],
+      ["사자","獅子","saja"], ["호랑이","老虎","horangi"], ["코끼리","大象","kokkiri"],
+      ["원숭이","猴子","wonsungi"], ["곰","熊","gom"], ["새","鳥","sae"], ["물고기","魚","mulgogi"]
+    ],
+    7: [
+      ["밥","飯","bap"], ["김치","泡菜","gimchi"], ["라면","拉麵","ramyeon"],
+      ["비빔밥","拌飯","bibimbap"], ["불고기","烤肉","bulgogi"], ["치킨","炸雞","chikin"],
+      ["과일","水果","gwail"], ["빵","麵包","ppang"], ["물","水","mul"], ["커피","咖啡","keopi"]
+    ],
+    8: [
+      ["날씨","天氣","nalssi"], ["봄","春天","bom"], ["여름","夏天","yeoreum"],
+      ["가을","秋天","gaeul"], ["겨울","冬天","gyeoul"], ["비","雨","bi"],
+      ["구름","雲","gureum"], ["바람","風","baram"], ["덥다","熱","deopda"], ["춥다","冷","chupda"]
+    ],
+    9: [
+      ["머리","頭","meori"], ["눈","眼睛","nun"], ["코","鼻子","ko"], ["입","嘴巴","ip"],
+      ["귀","耳朵","gwi"], ["손","手","son"], ["발","腳","bal"], ["배","肚子","bae"],
+      ["어깨","肩膀","eokkae"], ["다리","腿","dari"]
+    ],
+    10: [
+      ["자동차","汽車","jadongcha"], ["버스","公車","beoseu"], ["지하철","地鐵","jihacheol"],
+      ["기차","火車","gicha"], ["비행기","飛機","bihaenggi"], ["트럭","卡車","teureok"],
+      ["자전거","腳踏車","jajeongeo"], ["택시","計程車","taeksi"], ["오토바이","機車","otobai"],
+      ["걷다","走路","geotda"]
+    ],
+    11: [
+      ["학교","學校","hakgyo"], ["책","書","chaek"], ["연필","鉛筆","yeonpil"],
+      ["가방","包包","gabang"], ["의자","椅子","uija"], ["책상","書桌","chaeksang"],
+      ["시계","時鐘","sigye"], ["전화","電話","jeonhwa"], ["컴퓨터","電腦","keompyuteo"],
+      ["텔레비전","電視","tellebijeon"]
+    ],
+    12: [
+      ["좋다","好","jota"], ["나쁘다","壞","nappeuda"], ["크다","大","keuda"],
+      ["작다","小","jakda"], ["많다","多","manta"], ["적다","少","jeokda"],
+      ["먹다","吃","meokda"], ["가다","去","gada"], ["오다","來","oda"], ["자다","睡覺","jada"]
+    ]
+  };
+
+  var VOCAB = [];
+  Object.keys(VOCAB_RAW).forEach(function(idStr){
+    var id = Number(idStr);
+    VOCAB_RAW[id].forEach(function(triple){
+      VOCAB.push({ ex: triple[0], zh: triple[1], rom: triple[2], unit: id });
+    });
+  });
+
+  var UNIT_LABELS = {};
+  Object.keys(THEMES).forEach(function(idStr){
+    var id = Number(idStr);
+    var count = VOCAB.filter(function(it){ return it.unit === id; }).length;
+    UNIT_LABELS[id] = '單元 ' + id + '・' + THEMES[id] + '（' + count + ' 個字）';
+  });
+
+  function createUnitFilter(container, onChange){
+    var state = {};
+    Object.keys(UNIT_LABELS).forEach(function(idStr){ state[Number(idStr)] = true; });
+    Object.keys(UNIT_LABELS).forEach(function(idStr){
+      var id = Number(idStr);
+      var label = document.createElement('label');
+      label.className = 'unit-chip';
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = true;
+      cb.addEventListener('change', function(){
+        state[id] = cb.checked;
+        label.classList.toggle('unchecked', !cb.checked);
+        onChange(getSelectedIds());
+      });
+      var span = document.createElement('span');
+      span.textContent = UNIT_LABELS[id];
+      label.appendChild(cb);
+      label.appendChild(span);
+      container.appendChild(label);
+    });
+    function getSelectedIds(){
+      return Object.keys(state).filter(function(k){ return state[k]; }).map(Number);
+    }
+    return { getSelectedIds: getSelectedIds };
+  }
+
+  // ---------------- Speech ----------------
+  var koVoice = null;
+  function pickVoice(){
+    if (!('speechSynthesis' in window)) return;
+    var voices = window.speechSynthesis.getVoices();
+    for (var i=0;i<voices.length;i++){
+      if (voices[i].lang && voices[i].lang.toLowerCase().indexOf('ko') === 0){ koVoice = voices[i]; break; }
+    }
+  }
+  if ('speechSynthesis' in window){
+    pickVoice();
+    window.speechSynthesis.onvoiceschanged = pickVoice;
+  } else {
+    document.getElementById('noSpeechNote').style.display = 'block';
+  }
+
+  function speak(text){
+    if (!('speechSynthesis' in window)) return;
+    try {
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = 'ko-KR';
+      if (koVoice) u.voice = koVoice;
+      u.rate = 0.85;
+      window.speechSynthesis.speak(u);
+    } catch(e){ /* ignore */ }
+  }
+
+  function speakItem(item){
+    speak(item.name + ", " + item.ex);
+  }
+
+  // ---------------- Tabs ----------------
+  var tabBtns = document.querySelectorAll('.tab-btn');
+  var views = document.querySelectorAll('.view');
+  tabBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      tabBtns.forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      var target = btn.getAttribute('data-view');
+      views.forEach(function(v){ v.classList.remove('active'); });
+      document.getElementById('view-' + target).classList.add('active');
+      if (target === 'progress') renderProgressTab();
+    });
+  });
+
+  // ---------------- Alphabet sub-tabs (字母總覽 / 練習寫字) ----------------
+  var subtabBtns = document.querySelectorAll('.subtab-btn');
+  var subviews = document.querySelectorAll('.subview');
+  subtabBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      subtabBtns.forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      var target = btn.getAttribute('data-subview');
+      subviews.forEach(function(v){ v.classList.remove('active'); });
+      document.getElementById('subview-' + target).classList.add('active');
+    });
+  });
+  function goToWriteSubview(){
+    subtabBtns.forEach(function(b){ b.classList.remove('active'); });
+    document.querySelector('.subtab-btn[data-subview="write"]').classList.add('active');
+    subviews.forEach(function(v){ v.classList.remove('active'); });
+    document.getElementById('subview-write').classList.add('active');
+  }
+
+  // ---------------- Grids ----------------
+  function buildGrid(containerId, detailId, items){
+    var grid = document.getElementById(containerId);
+    var detail = document.getElementById(detailId);
+    items.forEach(function(item, idx){
+      var card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = '<div class="glyph hangul">'+item.char+'</div><div class="rom">'+item.rom+'</div>';
+      card.addEventListener('click', function(){
+        document.querySelectorAll('#grid-consonants .card, #grid-vowels .card').forEach(function(c){ c.classList.remove('selected'); });
+        card.classList.add('selected');
+        speakItem(item);
+        markLetterHeard(item.char);
+        showDetail(detail, item);
+      });
+      grid.appendChild(card);
+    });
+  }
+
+  function showDetail(detail, item){
+    detail.classList.add('show');
+    detail.innerHTML =
+      '<div class="big-glyph hangul">'+item.char+'</div>'+
+      '<div class="detail-info">'+
+        '<div class="name">名稱：'+item.name+'　·　羅馬拼音：'+item.rom+'</div>'+
+        '<div class="example hangul">'+item.ex+'<span class="zh">'+item.zh+'</span></div>'+
+      '</div>'+
+      '<div class="detail-actions">'+
+        '<button class="btn primary" data-action="play">🔊 再聽一次</button>'+
+        '<button class="btn" data-action="write">✍️ 練習寫這個字</button>'+
+      '</div>';
+    detail.querySelector('[data-action="play"]').addEventListener('click', function(){ speakItem(item); });
+    detail.querySelector('[data-action="write"]').addEventListener('click', function(){
+      goToWrite(item.char);
+    });
+  }
+
+  buildGrid('grid-consonants', 'detail-alphabet', consonants);
+  buildGrid('grid-vowels', 'detail-alphabet', vowels);
+
+  // ---------------- Write practice ----------------
+  var picker = document.getElementById('writePicker');
+  var canvas = document.getElementById('traceCanvas');
+  var ctx = canvas.getContext('2d');
+  var currentWriteChar = all[0];
+
+  all.forEach(function(item){
+    var b = document.createElement('button');
+    b.textContent = item.char;
+    b.addEventListener('click', function(){
+      picker.querySelectorAll('button').forEach(function(x){ x.classList.remove('active'); });
+      b.classList.add('active');
+      setWriteChar(item);
+    });
+    picker.appendChild(b);
+  });
+
+  function setWriteChar(item){
+    currentWriteChar = item;
+    drawGuide();
+    document.getElementById('writeHint').textContent =
+      '目前練習：' + item.char + '（' + item.name + '，' + item.rom + '）　例字：' + item.ex + ' ' + item.zh;
+    picker.querySelectorAll('button').forEach(function(b){
+      b.classList.toggle('active', b.textContent === item.char);
+    });
+  }
+
+  function computedInk(){
+    return getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() || '#211D18';
+  }
+  function computedLine(){
+    return getComputedStyle(document.documentElement).getPropertyValue('--line').trim() || '#E4DBC9';
+  }
+
+  function drawGuide(){
+    ctx.clearRect(0,0,canvas.width, canvas.height);
+    ctx.save();
+    ctx.globalAlpha = 0.16;
+    ctx.fillStyle = computedInk();
+    ctx.font = "700 190px 'Noto Serif KR', serif";
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(currentWriteChar.char, canvas.width/2, canvas.height/2 + 10);
+    ctx.restore();
+    // guide cross lines
+    ctx.save();
+    ctx.strokeStyle = computedLine();
+    ctx.setLineDash([4,5]);
+    ctx.beginPath();
+    ctx.moveTo(canvas.width/2, 10); ctx.lineTo(canvas.width/2, canvas.height-10);
+    ctx.moveTo(10, canvas.height/2); ctx.lineTo(canvas.width-10, canvas.height/2);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  var drawing = false, lastX=0, lastY=0;
+  function pos(e){
+    var rect = canvas.getBoundingClientRect();
+    var cx = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    var cy = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+    return {x: cx * (canvas.width/rect.width), y: cy * (canvas.height/rect.height)};
+  }
+  function startDraw(e){
+    drawing = true;
+    var p = pos(e); lastX = p.x; lastY = p.y;
+    e.preventDefault();
+  }
+  function moveDraw(e){
+    if (!drawing) return;
+    var p = pos(e);
+    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--blue').trim() || '#1F4E8C';
+    ctx.lineWidth = 7;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+    lastX = p.x; lastY = p.y;
+    e.preventDefault();
+  }
+  function endDraw(){ drawing = false; }
+
+  canvas.addEventListener('mousedown', startDraw);
+  canvas.addEventListener('mousemove', moveDraw);
+  window.addEventListener('mouseup', endDraw);
+  canvas.addEventListener('touchstart', startDraw, {passive:false});
+  canvas.addEventListener('touchmove', moveDraw, {passive:false});
+  canvas.addEventListener('touchend', endDraw);
+
+  document.getElementById('writeClearBtn').addEventListener('click', drawGuide);
+  document.getElementById('writePlayBtn').addEventListener('click', function(){ speakItem(currentWriteChar); });
+
+  function goToWrite(char){
+    tabBtns.forEach(function(b){ b.classList.remove('active'); });
+    document.querySelector('.tab-btn[data-view="alphabet"]').classList.add('active');
+    views.forEach(function(v){ v.classList.remove('active'); });
+    document.getElementById('view-alphabet').classList.add('active');
+    goToWriteSubview();
+    var item = all.filter(function(x){ return x.char === char; })[0];
+    if (item) setWriteChar(item);
+  }
+
+  setWriteChar(all[0]);
+
+  // ---------------- Combination chart (子音 x 母音) ----------------
+  var CHO = [
+    {ch:'ㄱ', rom:'g'}, {ch:'ㄲ', rom:'kk'}, {ch:'ㄴ', rom:'n'}, {ch:'ㄷ', rom:'d'}, {ch:'ㄸ', rom:'tt'},
+    {ch:'ㄹ', rom:'r'}, {ch:'ㅁ', rom:'m'}, {ch:'ㅂ', rom:'b'}, {ch:'ㅃ', rom:'pp'}, {ch:'ㅅ', rom:'s'},
+    {ch:'ㅆ', rom:'ss'}, {ch:'ㅇ', rom:''}, {ch:'ㅈ', rom:'j'}, {ch:'ㅉ', rom:'jj'}, {ch:'ㅊ', rom:'ch'},
+    {ch:'ㅋ', rom:'k'}, {ch:'ㅌ', rom:'t'}, {ch:'ㅍ', rom:'p'}, {ch:'ㅎ', rom:'h'}
+  ];
+  var JUNG = [
+    {ch:'ㅏ', rom:'a'}, {ch:'ㅐ', rom:'ae'}, {ch:'ㅑ', rom:'ya'}, {ch:'ㅒ', rom:'yae'}, {ch:'ㅓ', rom:'eo'},
+    {ch:'ㅔ', rom:'e'}, {ch:'ㅕ', rom:'yeo'}, {ch:'ㅖ', rom:'ye'}, {ch:'ㅗ', rom:'o'}, {ch:'ㅘ', rom:'wa'},
+    {ch:'ㅙ', rom:'wae'}, {ch:'ㅚ', rom:'oe'}, {ch:'ㅛ', rom:'yo'}, {ch:'ㅜ', rom:'u'}, {ch:'ㅝ', rom:'wo'},
+    {ch:'ㅞ', rom:'we'}, {ch:'ㅟ', rom:'wi'}, {ch:'ㅠ', rom:'yu'}, {ch:'ㅡ', rom:'eu'}, {ch:'ㅢ', rom:'ui'},
+    {ch:'ㅣ', rom:'i'}
+  ];
+
+  function buildChart(){
+    var table = document.getElementById('chartTable');
+    var thead = document.createElement('thead');
+    var headRow = document.createElement('tr');
+    var corner = document.createElement('th');
+    corner.className = 'corner';
+    headRow.appendChild(corner);
+    JUNG.forEach(function(v){
+      var th = document.createElement('th');
+      th.className = 'hangul';
+      th.textContent = v.ch;
+      headRow.appendChild(th);
+    });
+    thead.appendChild(headRow);
+    table.appendChild(thead);
+
+    var tbody = document.createElement('tbody');
+    CHO.forEach(function(c, cIdx){
+      var tr = document.createElement('tr');
+      var rowHead = document.createElement('td');
+      rowHead.className = 'rowhead hangul';
+      rowHead.textContent = c.ch;
+      tr.appendChild(rowHead);
+      JUNG.forEach(function(v, vIdx){
+        var codepoint = 0xAC00 + (cIdx * 21 + vIdx) * 28;
+        var syll = String.fromCharCode(codepoint);
+        var romanized = c.rom + v.rom;
+        var td = document.createElement('td');
+        td.className = 'cell hangul';
+        td.textContent = syll;
+        td.addEventListener('click', function(){
+          speak(syll);
+          document.getElementById('chartNow').innerHTML =
+            '<strong>' + syll + '</strong>　(' + romanized + ')';
+        });
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+  }
+  buildChart();
+
+  // ---------------- Vocabulary flashcards ----------------
+  var vocabList = VOCAB.slice();
+  var vocabIndex = 0;
+  var vocabCard = document.getElementById('vocabCard');
+  var vocabWordEl = document.getElementById('vocabWord');
+  var vocabZhEl = document.getElementById('vocabZh');
+  var vocabRomEl = document.getElementById('vocabRom');
+  var vocabLetterTagEl = document.getElementById('vocabLetterTag');
+  var vocabProgressEl = document.getElementById('vocabProgress');
+  var vocabEmptyEl = document.getElementById('vocabEmpty');
+
+  function renderVocab(){
+    if (vocabList.length === 0){
+      vocabCard.style.display = 'none';
+      document.querySelector('#view-vocab .vocab-controls').style.display = 'none';
+      document.getElementById('vocabShuffleBtn').style.display = 'none';
+      vocabEmptyEl.style.display = 'block';
+      vocabProgressEl.textContent = '0 / 0';
+      return;
+    }
+    vocabCard.style.display = '';
+    document.querySelector('#view-vocab .vocab-controls').style.display = '';
+    document.getElementById('vocabShuffleBtn').style.display = '';
+    vocabEmptyEl.style.display = 'none';
+    var item = vocabList[vocabIndex];
+    vocabCard.classList.remove('flipped');
+    vocabLetterTagEl.textContent = THEMES[item.unit];
+    vocabWordEl.textContent = item.ex;
+    vocabZhEl.textContent = item.zh;
+    vocabRomEl.textContent = '羅馬拼音：' + item.rom;
+    vocabProgressEl.textContent = (vocabIndex+1) + ' / ' + vocabList.length;
+  }
+
+  createUnitFilter(document.getElementById('vocabUnitFilter'), function(selectedIds){
+    vocabList = VOCAB.filter(function(it){ return selectedIds.indexOf(it.unit) !== -1; });
+    vocabIndex = 0;
+    renderVocab();
+  });
+
+  vocabCard.addEventListener('click', function(){
+    if (!vocabList.length) return;
+    vocabCard.classList.toggle('flipped');
+    if (vocabCard.classList.contains('flipped')){
+      markWordLearned(vocabList[vocabIndex].ex);
+    }
+  });
+  document.getElementById('vocabPlayBtn').addEventListener('click', function(){
+    if (!vocabList.length) return;
+    speak(vocabList[vocabIndex].ex);
+  });
+  document.getElementById('vocabNextBtn').addEventListener('click', function(){
+    if (!vocabList.length) return;
+    vocabIndex = (vocabIndex + 1) % vocabList.length;
+    renderVocab();
+  });
+  document.getElementById('vocabPrevBtn').addEventListener('click', function(){
+    if (!vocabList.length) return;
+    vocabIndex = (vocabIndex - 1 + vocabList.length) % vocabList.length;
+    renderVocab();
+  });
+  document.getElementById('vocabShuffleBtn').addEventListener('click', function(){
+    if (!vocabList.length) return;
+    for (var i = vocabList.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i+1));
+      var tmp = vocabList[i]; vocabList[i] = vocabList[j]; vocabList[j] = tmp;
+    }
+    vocabIndex = 0;
+    renderVocab();
+  });
+
+  renderVocab();
+
+  // ---------------- Vocabulary quiz ----------------
+  var vqPool = VOCAB.slice();
+  var vqCorrectCount = 0, vqTotalCount = 0, vqAnswer = null, vqAnswered = false;
+  var vqScoreEl = document.getElementById('vocabQuizScore');
+  var vqNotEnoughEl = document.getElementById('vocabQuizNotEnough');
+  var vqPromptEl = document.getElementById('vocabQuizPrompt');
+  var vqOptionsEl = document.getElementById('vocabQuizOptions');
+  var vqFeedbackEl = document.getElementById('vocabQuizFeedback');
+  var vqPlayBtn = document.getElementById('vocabQuizPlayBtn');
+  var vqNextBtn = document.getElementById('vocabQuizNextBtn');
+
+  createUnitFilter(document.getElementById('vocabQuizUnitFilter'), function(selectedIds){
+    vqPool = VOCAB.filter(function(it){ return selectedIds.indexOf(it.unit) !== -1; });
+    newVocabQuizRound();
+  });
+
+  function newVocabQuizRound(){
+    vqAnswered = false;
+    vqFeedbackEl.textContent = '';
+    vqFeedbackEl.className = 'quiz-feedback';
+    if (vqPool.length < 4){
+      vqNotEnoughEl.style.display = 'block';
+      vqPromptEl.textContent = '';
+      vqOptionsEl.innerHTML = '';
+      vqPlayBtn.disabled = true;
+      return;
+    }
+    vqNotEnoughEl.style.display = 'none';
+    vqPlayBtn.disabled = false;
+    var idx = Math.floor(Math.random() * vqPool.length);
+    vqAnswer = vqPool[idx];
+    var distractors = pickRandom(vqPool, 3, idx);
+    var options = distractors.concat([vqAnswer]);
+    options.sort(function(){ return Math.random() - 0.5; });
+    vqPromptEl.textContent = vqAnswer.zh;
+    vqOptionsEl.innerHTML = '';
+    options.forEach(function(opt){
+      var b = document.createElement('button');
+      b.className = 'quiz-opt hangul';
+      b.style.fontSize = '20px';
+      b.textContent = opt.ex;
+      b.addEventListener('click', function(){ handleVocabAnswer(opt, b); });
+      vqOptionsEl.appendChild(b);
+    });
+  }
+
+  function handleVocabAnswer(opt, btnEl){
+    if (vqAnswered) return;
+    vqAnswered = true;
+    vqTotalCount++;
+    var isCorrect = opt.ex === vqAnswer.ex;
+    if (isCorrect){
+      vqCorrectCount++;
+      btnEl.classList.add('correct');
+      vqFeedbackEl.textContent = '答對了！「' + vqAnswer.zh + '」就是「' + vqAnswer.ex + '」。';
+      vqFeedbackEl.className = 'quiz-feedback correct-text';
+    } else {
+      btnEl.classList.add('wrong');
+      vqFeedbackEl.textContent = '再試試！「' + vqAnswer.zh + '」的韓文是「' + vqAnswer.ex + '」。';
+      vqFeedbackEl.className = 'quiz-feedback wrong-text';
+      vqOptionsEl.querySelectorAll('.quiz-opt').forEach(function(b){
+        if (b.textContent === vqAnswer.ex) b.classList.add('correct');
+      });
+    }
+    speak(vqAnswer.ex);
+    vqScoreEl.textContent = '答對 ' + vqCorrectCount + ' 題 · 共作答 ' + vqTotalCount + ' 題';
+    recordVocabQuizResult(isCorrect);
+    markWordLearned(vqAnswer.ex);
+  }
+
+  vqPlayBtn.addEventListener('click', function(){
+    if (vqAnswer) speak(vqAnswer.ex);
+  });
+  vqNextBtn.addEventListener('click', newVocabQuizRound);
+
+  newVocabQuizRound();
+
+  // ---------------- Quiz ----------------
+  var quizScoreEl = document.getElementById('quizScore');
+  var quizOptionsEl = document.getElementById('quizOptions');
+  var quizFeedbackEl = document.getElementById('quizFeedback');
+  var quizPlayBtn = document.getElementById('quizPlayBtn');
+  var quizNextBtn = document.getElementById('quizNextBtn');
+
+  var correctCount = 0, totalCount = 0, currentAnswer = null, answered = false;
+
+  function pickRandom(arr, n, excludeIdx){
+    var pool = arr.slice();
+    if (excludeIdx !== undefined) pool.splice(excludeIdx,1);
+    var chosen = [];
+    while (chosen.length < n && pool.length){
+      var i = Math.floor(Math.random()*pool.length);
+      chosen.push(pool.splice(i,1)[0]);
+    }
+    return chosen;
+  }
+
+  function newQuizRound(){
+    answered = false;
+    quizFeedbackEl.textContent = '';
+    quizFeedbackEl.className = 'quiz-feedback';
+    var idx = Math.floor(Math.random()*all.length);
+    currentAnswer = all[idx];
+    var distractors = pickRandom(all, 3, idx);
+    var options = distractors.concat([currentAnswer]);
+    options.sort(function(){ return Math.random()-0.5; });
+    quizOptionsEl.innerHTML = '';
+    options.forEach(function(opt){
+      var b = document.createElement('button');
+      b.className = 'quiz-opt hangul';
+      b.textContent = opt.char;
+      b.addEventListener('click', function(){ handleAnswer(opt, b); });
+      quizOptionsEl.appendChild(b);
+    });
+    speakItem(currentAnswer);
+  }
+
+  function handleAnswer(opt, btnEl){
+    if (answered) return;
+    answered = true;
+    totalCount++;
+    var isCorrect = opt.char === currentAnswer.char;
+    if (isCorrect){
+      correctCount++;
+      btnEl.classList.add('correct');
+      quizFeedbackEl.textContent = '答對了！' + currentAnswer.char + '（' + currentAnswer.name + '）就是這個音。';
+      quizFeedbackEl.className = 'quiz-feedback correct-text';
+    } else {
+      btnEl.classList.add('wrong');
+      quizFeedbackEl.textContent = '再試試！正確答案是 ' + currentAnswer.char + '（' + currentAnswer.name + '）。';
+      quizFeedbackEl.className = 'quiz-feedback wrong-text';
+      quizOptionsEl.querySelectorAll('.quiz-opt').forEach(function(b){
+        if (b.textContent === currentAnswer.char) b.classList.add('correct');
+      });
+    }
+    quizScoreEl.textContent = '答對 ' + correctCount + ' 題 · 共作答 ' + totalCount + ' 題';
+    recordLetterQuizResult(isCorrect);
+    markLetterHeard(currentAnswer.char);
+  }
+
+  quizPlayBtn.addEventListener('click', function(){
+    if (currentAnswer) speakItem(currentAnswer);
+  });
+  quizNextBtn.addEventListener('click', newQuizRound);
+
+  newQuizRound();
+
+})();
+</script>
+</body>
+</html>
